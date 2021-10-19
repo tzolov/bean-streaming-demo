@@ -37,12 +37,12 @@ public class BeanStreamingDemoApplication implements CommandLineRunner {
 		PCollection<Row> kafkaRecordsAsRows = CloudEventsPayloadUtils.cloudEventKafkaRecordsAsRows(
 				pipeline, CloudEventsPayloadUtils.cloudEventSchema);
 
-		PCollection<Row> sqlRows = kafkaRecordsAsRows.apply(SqlTransform.query("SELECT * FROM PCOLLECTION"));
-		//PCollection<Row> sqlRows = kafkaRecordsAsRows.apply(SqlTransform.query(
-		//		"SELECT msg_partition, count(*) as cnt " +
-		//				"FROM PCOLLECTION " +
-		//				"GROUP BY msg_partition, " +
-		//				"TUMBLE(rowtime, INTERVAL '10' SECOND)"));
+		//PCollection<Row> sqlRows = kafkaRecordsAsRows.apply(SqlTransform.query("SELECT * FROM PCOLLECTION"));
+		PCollection<Row> sqlRows = kafkaRecordsAsRows.apply(SqlTransform.query(
+				"SELECT msg_partition, count(*) as cnt " +
+						"FROM PCOLLECTION " +
+						"GROUP BY msg_partition, " +
+						"TUMBLE(rowtime, INTERVAL '10' SECOND)"));
 
 		PCollectionPrintUtils.printRows(sqlRows);
 		PCollectionPrintUtils.rowsToFile("target/part", sqlRows);
